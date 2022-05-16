@@ -3,6 +3,9 @@ import 'package:kuber/pages/homepage.dart';
 import 'package:kuber/theme.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'loginUI/screens/auth_screen.dart';
+import 'loginUI/screens/intro_screen.dart';
+
 
 void main() async{
   await Hive.initFlutter();
@@ -19,7 +22,13 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Kuber Manager',
       theme: myTheme,
-      home: const HomePage(),
+      home: IntroScreen(),
+    routes: {
+    'intro': (context) => IntroScreen(),
+    'home': (context) => HomePage(),
+    'login': (context) => AuthScreen(authType: AuthType.login),
+    'register': (context) => AuthScreen(authType: AuthType.register),
+    }
     );
   }
 }

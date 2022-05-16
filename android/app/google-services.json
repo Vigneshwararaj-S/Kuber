@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "745541307377",
+    "project_id": "kuber-dc8e9",
+    "storage_bucket": "kuber-dc8e9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:745541307377:android:639251852c642c0d9b5250",
+        "android_client_info": {
+          "package_name": "com.example.kuber"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "745541307377-ado9o8eu2volma6qg9tvmumpd1bpho4d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBBi9nZrtOjc0IsIHRH_06TtpOSG_3_70c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "745541307377-ado9o8eu2volma6qg9tvmumpd1bpho4d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
