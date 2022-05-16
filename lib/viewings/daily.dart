@@ -13,7 +13,8 @@ import 'package:flutter/rendering.dart';
 import 'package:kuber/static.dart' as Static;
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:pie_chart/pie_chart.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
+
 
 
 class Daily extends StatefulWidget {
@@ -27,6 +28,7 @@ class _DailyState extends State<Daily> {
   //
   late Box box;
   late SharedPreferences preferences;
+  late TooltipBehavior _tooltipBehavior;
   DbHelper dbHelper = DbHelper();
   Map? data;
   int totalBalance = 0;
@@ -36,7 +38,8 @@ class _DailyState extends State<Daily> {
   DateTime today = DateTime.now();
   DateTime now = DateTime.now();
   int index = 1;
-  int carrys = 0;
+  int carrys = 1;
+  int z = 500;
 
   List<String> months = [
     "Jan",
@@ -92,7 +95,12 @@ class _DailyState extends State<Daily> {
     super.initState();
     getPreference();
     box = Hive.box('money');
+    var snapshot;
+    late var _chartData = getPlotPoints(snapshot.data!);
+    _tooltipBehavior = TooltipBehavior(enable: true);
   }
+  
+  
 
   getPreference() async {
     preferences = await SharedPreferences.getInstance();
@@ -139,7 +147,7 @@ class _DailyState extends State<Daily> {
     for (var i = 0; i < tempdataSet.length; i++) {
       dataSet.add(
         FlSpot(
-          tempdataSet[i].date.day.toDouble(),
+          tempdataSet[i].category,
           tempdataSet[i].amount.toDouble(),
         ),
       );
@@ -211,6 +219,7 @@ class _DailyState extends State<Daily> {
             //
             getTotalBalance(snapshot.data!);
             getPlotPoints(snapshot.data!);
+            List<FlSpot> arr;
             return ListView(
               children: [
                 //
@@ -445,7 +454,8 @@ class _DailyState extends State<Daily> {
                       ),
                     ],
                   ),
-                  /*child: LineChart(
+
+                 /* child: LineChart(
                     LineChartData(
                       borderData: FlBorderData(
                         show: false,
@@ -467,13 +477,45 @@ class _DailyState extends State<Daily> {
                       ],
                     ),
                   ),*/
+
                   
                   
                   /*child: PieChart(
-                      dataMap : snapshot.data,
-                      chartType: ChartType.ring,
+
+                      PieChartData(
+                        sections: showingSections(snapshot.data!)
+
+
+
+
+
+
+
+
+                      )
+
 
                   ),*/
+
+                  child: SfCircularChart(
+                    title: ChartTitle(text: 'Daily Expense Graph By Categories'),
+                    legend: Legend(isVisible:true, overflowMode: LegendItemOverflowMode.wrap),
+                    tooltipBehavior: _tooltipBehavior,
+                    series: <CircularSeries>[
+                      DoughnutSeries<FlSpot, String>(
+                        dataSource: getPlotPoints(snapshot.data!),
+                        xValueMapper: (FlSpot datas, _) => datas.categor,
+                        yValueMapper: (FlSpot datas, _)=> datas.amts,
+                        dataLabelSettings: DataLabelSettings(isVisible: true),
+                        enableTooltip: true
+
+                      )
+                    ],
+                  ),
+
+
+
+
                 ),
                 //
                 Padding(
@@ -540,6 +582,11 @@ class _DailyState extends State<Daily> {
       ),
     );
   }
+
+
+    //
+    // Sorting the list as per the date
+
 
 //
 //
@@ -864,147 +911,46 @@ class _DailyState extends State<Daily> {
         children: [
 
 
-
-          InkWell(
-            onTap: () {
-              setState(() {
-                index = 1;
-                carrys = 1;
-                today = DateTime.now();
-              });
-            },
-            child: Container(
-              height: 50.0,
-              width: MediaQuery.of(context).size.width * 0.3,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  8.0,
+          for(int i = 1;i<=now.day;i++)
+            InkWell(
+              onTap: () {
+                setState(() {
+                  index = i;
+                  if (index > carrys)
+                  {
+                    today = DateTime(now.year, now.month , today.day - (index - carrys));
+                    carrys = index;
+                  }
+                  else if (index < carrys)
+                  {
+                    today = DateTime(now.year, now.month , today.day + (carrys - index));
+                    carrys = index;
+                  }
+                });
+              },
+              child: Container(
+                height: 50.0,
+                width: MediaQuery.of(context).size.width * 0.3,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(
+                    8.0,
+                  ),
+                  color: index == i ? Static.PrimaryColor : Colors.white,
                 ),
-                color: index == 1 ? Static.PrimaryColor : Colors.white,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                days[now.day - 1],
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                  color: index == 1 ? Colors.white : Static.PrimaryColor,
-                ),
-              ),
-            ),
-          ),
-
-          InkWell(
-            onTap: () {
-              setState(() {
-                index = 2;
-                if (index > carrys)
-                {
-                  today = DateTime(now.year, now.month , today.day - (index - carrys));
-                  carrys = index;
-                }
-                else if (index < carrys)
-                {
-                  today = DateTime(now.year, now.month , today.day + (carrys - index));
-                  carrys = index;
-                }
-
-              });
-            },
-            child: Container(
-              height: 50.0,
-              width: MediaQuery.of(context).size.width * 0.3,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  8.0,
-                ),
-                color: index == 2 ? Static.PrimaryColor : Colors.white,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                days[now.day - 2],
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                  color: index == 2 ? Colors.white : Static.PrimaryColor,
+                alignment: Alignment.center,
+                child: Text(
+                  days[now.day-i],
+                  style: TextStyle(
+                    fontSize: 20.0,
+                    fontWeight: FontWeight.w600,
+                    color: index == i ? Colors.white : Static.PrimaryColor,
+                  ),
                 ),
               ),
             ),
-          ),
 
-          InkWell(
-            onTap: () {
-              setState(() {
-                index = 3;
-                if (index > carrys)
-                {
-                  today = DateTime(now.year, now.month , today.day - (index - carrys));
-                  carrys = index;
-                }
-                else if (index < carrys)
-                {
-                  today = DateTime(now.year, now.month , today.day + (carrys - index));
-                  carrys = index;
-                }
-              });
-            },
-            child: Container(
-              height: 50.0,
-              width: MediaQuery.of(context).size.width * 0.3,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  8.0,
-                ),
-                color: index == 3 ? Static.PrimaryColor : Colors.white,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                days[now.day-3],
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                  color: index == 3 ? Colors.white : Static.PrimaryColor,
-                ),
-              ),
-            ),
-          ),
 
-          InkWell(
-            onTap: () {
-              setState(() {
-                index = 4;
-                if (index > carrys)
-                {
-                  today = DateTime(now.year, now.month , today.day - (index - carrys));
-                  carrys = index;
-                }
-                else if (index < carrys)
-                {
-                  today = DateTime(now.year, now.month , today.day + (carrys - index));
-                  carrys = index;
-                }
-              });
-            },
-            child: Container(
-              height: 50.0,
-              width: MediaQuery.of(context).size.width * 0.3,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(
-                  8.0,
-                ),
-                color: index == 4 ? Static.PrimaryColor : Colors.white,
-              ),
-              alignment: Alignment.center,
-              child: Text(
-                days[now.day-4],
-                style: TextStyle(
-                  fontSize: 20.0,
-                  fontWeight: FontWeight.w600,
-                  color: index == 4 ? Colors.white : Static.PrimaryColor,
-                ),
-              ),
-            ),
-          ),
+
 
 
 
@@ -1018,7 +964,17 @@ class _DailyState extends State<Daily> {
     );
 
 
+
+
+
   }
+}
+
+class FlSpot{
+  FlSpot(this.categor,this.amts);
+  final String categor;
+  final double amts;
+
 }
 
 

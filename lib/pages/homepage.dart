@@ -116,7 +116,7 @@ class _HomePageState extends State<HomePage> {
     totalIncome = 0;
     totalExpense = 0;
     for (TransactionModel data in entireData) {
-      if (data.date.month == today.month) {
+      if (data.date.year == today.year) {
         if (data.type == "Income") {
           totalBalance += data.amount;
           totalIncome += data.amount;
