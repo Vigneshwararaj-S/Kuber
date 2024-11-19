@@ -1,6 +1,7 @@
 import 'package:fab_circular_menu/fab_circular_menu.dart';
-import 'package:kuber/controllers/db_helper.dart';
-import 'package:kuber/pages/add_transaction.dart';
+import 'package:kuber/business/controllers/Bdb_helper.dart';
+import 'package:kuber/business/pages/badd_transaction.dart';
+import 'package:kuber/business/pages/widgets/viz.dart';
 import 'package:kuber/pages/models/transaction.dart';
 import 'package:kuber/pages/widgets/visualize.dart';
 import 'package:kuber/settings.dart';
@@ -10,26 +11,26 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:kuber/static.dart' as Static;
+import 'package:kuber/business/staticb.dart' as Static;
 import 'package:hive/hive.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../business/pages/bhome_page.dart';
+import '../../pages/homepage.dart';
 
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class BHomePage extends StatefulWidget {
+  const BHomePage({Key? key}) : super(key: key);
   static const String id = 'home_page';
 
   @override
-  _HomePageState createState() => _HomePageState();
+  _BHomePageState createState() => _BHomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _BHomePageState extends State<BHomePage> {
   //
-  late Box box;
-  late SharedPreferences preferences;
-  DbHelper dbHelper = DbHelper();
+  late Box box1;
+  late SharedPreferences preferences1;
+  BDbHelper dbHelper = BDbHelper();
   Map? data;
   int totalBalance = 0;
   int totalIncome = 0;
@@ -58,23 +59,23 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     getPreference();
-    box = Hive.box('money');
+    box1 = Hive.box('money');
   }
 
   getPreference() async {
-    preferences = await SharedPreferences.getInstance();
+    preferences1 = await SharedPreferences.getInstance();
   }
 
   Future<List<TransactionModel>> fetch() async {
-    if (box.values.isEmpty) {
+    if (box1.values.isEmpty) {
       return Future.value([]);
     } else {
       // return Future.value(box.toMap());
       List<TransactionModel> items = [];
-      box.toMap().values.forEach((element) {
+      box1.toMap().values.forEach((element) {
         print("Element__");
-         print(element['category']);
-         print(element);
+        print(element['category']);
+        print(element);
         items.add(
           TransactionModel(
             element['amount'] as int,
@@ -144,92 +145,92 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.grey[200],
       //
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
+      floatingActionButton: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
 
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(
-                    CupertinoPageRoute(
-                      builder: (context) => BHomePage(),
-                    ),
-                  )
-                      .then((value) {
-                    setState(() {});
-                  });
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    16.0,
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(
+                  CupertinoPageRoute(
+                    builder: (context) => HomePage(),
                   ),
-                ),
-                backgroundColor: Static.PrimaryColor,
-                
-                child: Icon(
-                  Icons.business,
-                  size: 32.0,
+                )
+                    .then((value) {
+                  setState(() {});
+                });
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  16.0,
                 ),
               ),
+              backgroundColor: Static.PrimaryColor,
+
+              child: Icon(
+                Icons.business,
+                size: 32.0,
+              ),
+            ),
 
 
 
 
 
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(
-                    CupertinoPageRoute(
-                      builder: (context) => AddExpenseNoGradient(),
-                    ),
-                  )
-                      .then((value) {
-                    setState(() {});
-                  });
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    16.0,
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(
+                  CupertinoPageRoute(
+                    builder: (context) => BAddExpenseNoGradient(),
                   ),
-                ),
-                backgroundColor: Static.PrimaryColor,
-                child: Icon(
-                  Icons.add_outlined,
-                  size: 32.0,
+                )
+                    .then((value) {
+                  setState(() {});
+                });
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  16.0,
                 ),
               ),
+              backgroundColor: Static.PrimaryColor,
+              child: Icon(
+                Icons.add_outlined,
+                size: 32.0,
+              ),
+            ),
 
 
-              FloatingActionButton(
-                onPressed: () {
-                  Navigator.of(context)
-                      .push(
-                    CupertinoPageRoute(
-                      builder: (context) => Visual(),
-                    ),
-                  )
-                      .then((value) {
-                    setState(() {});
-                  });
-                },
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(
-                    16.0,
+            FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context)
+                    .push(
+                  CupertinoPageRoute(
+                    builder: (context) => Viz(),
                   ),
+                )
+                    .then((value) {
+                  setState(() {});
+                });
+              },
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(
+                  16.0,
                 ),
-                backgroundColor: Static.PrimaryColor,
-                child: Icon(
-                  Icons.amp_stories,
-                  size: 32.0,
-                ),
-              )
-            ],
-          ),
+              ),
+              backgroundColor: Static.PrimaryColor,
+              child: Icon(
+                Icons.amp_stories,
+                size: 32.0,
+              ),
+            )
+          ],
         ),
+      ),
 
 
 
@@ -240,7 +241,7 @@ class _HomePageState extends State<HomePage> {
       body: FutureBuilder<List<TransactionModel>>(
         future: fetch(),
         builder: (context, snapshot) {
-           //print(snapshot.data);
+          //print(snapshot.data);
           if (snapshot.hasError) {
             return Center(
               child: Text(
@@ -304,7 +305,7 @@ class _HomePageState extends State<HomePage> {
                           SizedBox(
                             width: 200.0,
                             child: Text(
-                              "Welcome ${preferences.getString('name')}",
+                              "Business page  Welcome ${preferences1.getString('name')}",
                               style: TextStyle(
                                 fontSize: 24.0,
                                 fontWeight: FontWeight.w700,
@@ -513,7 +514,7 @@ class _HomePageState extends State<HomePage> {
                           isCurved: false,
                           barWidth: 2.5,
                           color: (
-                            Static.PrimaryColor
+                              Static.PrimaryColor
                           ),
                           showingIndicators: [200, 200, 90, 10],
                           dotData: FlDotData(
@@ -704,7 +705,7 @@ class _HomePageState extends State<HomePage> {
           "This will delete this record. This action is irreversible. Do you want to continue ?",
         );
         if (answer != null && answer) {
-          await dbHelper.deleteData(index);
+          await dbHelper.deleteData1(index);
           setState(() {});
         }
       },
@@ -817,7 +818,7 @@ class _HomePageState extends State<HomePage> {
         );
 
         if (answer != null && answer) {
-          await dbHelper.deleteData(index);
+          await dbHelper.deleteData1(index);
           setState(() {});
         }
       },
